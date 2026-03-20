@@ -1,3 +1,9 @@
+// Patterns in a CREATE POLICY name that indicate USING (true) is intentional
+const SAFE_POLICY_NAMES =
+  /service.?role|admin|anyone|public|publicly|all.?users.*(view|read)|authenticated.*(plan|feature|allocation)/i;
+
+const SQL_FILE = /\.(sql)$|migrations|supabase/i;
+
 export function check(files, rootDir, stacks) {
   if (!stacks.has('supabase') && !stacks.has('firebase')) return [];
 
@@ -10,8 +16,17 @@ export function check(files, rootDir, stacks) {
 
       // ── Supabase ──────────────────────────────────────────────
       if (stacks.has('supabase')) {
-        // USING (true) — open policy
+        // USING (true) — look back up to 8 lines to find the CREATE POLICY name
         if (/USING\s*\(\s*true\s*\)/i.test(line)) {
+          // Grab the surrounding block (up to 8 lines back) to find policy name
+          const contextLines = lines.slice(Math.max(0, i - 8), i + 1).join('\n');
+
+          // Skip if the policy name suggests it's intentionally open
+          if (SAFE_POLICY_NAMES.test(contextLines)) return;
+
+          // Also skip if it's clearly scoped (e.g. has TO service_role nearby)
+          if (/TO\s+service_role/i.test(contextLines)) return;
+
           findings.push({
             severity: 'critical',
             title: 'Supabase RLS policy USING (true) — all rows exposed',
@@ -36,17 +51,23 @@ export function check(files, rootDir, stacks) {
           });
         }
 
-        // INSERT/UPDATE without WITH CHECK (look ahead a few lines)
-        if (/FOR\s+(INSERT|UPDATE)/i.test(line)) {
+        // INSERT/UPDATE without WITH CHECK — SQL/migration files only
+        if (SQL_FILE.test(path) && /FOR\s+(INSERT|UPDATE)/i.test(line)) {
           const block = lines.slice(i, i + 6).join(' ');
+          // Skip if service role context
+          if (/TO\s+service_role/i.test(block)) return;
           if (!/WITH\s+CHECK/i.test(block)) {
+            // Check if the nearby USING clause is (true) — service role patterns are fine
+            const withUsing = lines.slice(i, i + 8).join('\n');
+            if (/TO\s+service_role/i.test(withUsing)) return;
+
             findings.push({
               severity: 'high',
               title: 'Supabase RLS INSERT/UPDATE policy missing WITH CHECK',
               file: path,
               line: i + 1,
               code: trimmed.substring(0, 90),
-              risk: 'Without WITH CHECK, a user can INSERT/UPDATE a row setting user_id to someone else\'s ID.',
+              risk: "Without WITH CHECK, a user can INSERT/UPDATE a row setting user_id to someone else's ID.",
               fix: 'Add WITH CHECK ((SELECT auth.uid()) = user_id) matching your USING clause.',
             });
           }
@@ -68,7 +89,6 @@ export function check(files, rootDir, stacks) {
 
       // ── Firebase ──────────────────────────────────────────────
       if (stacks.has('firebase')) {
-        // allow read/write: if true;
         if (/allow\s+(?:read|write|read\s*,\s*write)\s*:\s*if\s+true\s*;/.test(line)) {
           findings.push({
             severity: 'critical',
@@ -81,7 +101,6 @@ export function check(files, rootDir, stacks) {
           });
         }
 
-        // allow if request.auth != null (no ownership check)
         if (/allow\s+(?:read|write|read\s*,\s*write)\s*:\s*if\s+request\.auth\s*!=\s*null/.test(line)) {
           findings.push({
             severity: 'high',
