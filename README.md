@@ -1,8 +1,19 @@
-# pagepatcher-vibe-security
+<p align="center">
+    <img src="https://img.shields.io/badge/security-vibe--coded%20apps-DC2626.svg" alt="Security for vibe-coded apps" />
+    <img src="https://img.shields.io/badge/license-MIT-blue.svg" alt="MIT License" />
+    <a href="https://pagepatcher.com">
+        <img src="https://img.shields.io/badge/by-PagePatcher.com-0ea5e9.svg?style=flat" alt="PagePatcher.com" />
+    </a>
+    <a href="https://jessekhala.com">
+        <img src="https://img.shields.io/badge/Contact-jessekhala.com-95a5a6.svg?style=flat" alt="jessekhala.com" />
+    </a>
+</p>
 
-> Security audit CLI for vibe-coded apps — by [PagePatcher.com](https://pagepatcher.com)
+<h1 align="center">pagepatcher-vibe-security — CLI Security Audit for Vibe-Coded Apps</h1>
 
-Scans your codebase for common security vulnerabilities that AI coding assistants introduce. Run it before every deploy.
+A CLI tool that scans your codebase for common security vulnerabilities that AI coding assistants introduce. Built by [Jesse](https://jessekhala.com) at [PagePatcher.com](https://pagepatcher.com).
+
+AI assistants are great at building features fast but consistently get security wrong: hardcoding secrets, skipping row-level security, trusting client-submitted prices, storing tokens in localStorage. This tool catches those patterns before they ship.
 
 ```bash
 npx pagepatcher-vibe-security
@@ -70,7 +81,7 @@ npx pagepatcher-vibe-security --path ./my-app
 npm install -g pagepatcher-vibe-security
 pagepatcher-vibe-security
 
-# In CI — exits with code 1 if critical/high issues exist
+# CI — exits with code 1 if critical/high issues exist
 pagepatcher-vibe-security --path . && echo "Clean"
 ```
 
@@ -78,15 +89,15 @@ pagepatcher-vibe-security --path . && echo "Clean"
 
 ## Tech Stack Detection
 
-Scans `package.json` to auto-detect which checks to run:
+Scans `package.json` to auto-detect which checks to run — no config needed:
 
-- **Next.js** → auth middleware, security headers, Server Actions
-- **Supabase** → RLS policies, service_role exposure
-- **Stripe** → webhook verification, client-side pricing
-- **Firebase** → security rules
-- **React Native / Expo** → AsyncStorage, bundle secrets
-- **OpenAI / Anthropic / Google AI** → AI key exposure, client-side calls
-- **Prisma** → operator injection, raw query safety
+- **Next.js** — auth middleware, security headers, Server Actions
+- **Supabase** — RLS policies, service_role exposure
+- **Stripe** — webhook verification, client-side pricing
+- **Firebase** — security rules
+- **React Native / Expo** — AsyncStorage, bundle secrets
+- **OpenAI / Anthropic / Google AI** — key exposure, client-side calls
+- **Prisma** — operator injection, raw query safety
 
 ---
 
@@ -95,16 +106,14 @@ Scans `package.json` to auto-detect which checks to run:
 | Code | Meaning |
 |---|---|
 | `0` | No critical or high issues |
-| `1` | Critical or high issues found |
+| `1` | Critical or high issues found (useful for CI) |
 | `2` | Could not read directory |
-
-Useful in CI pipelines — block PRs if critical issues are found.
 
 ---
 
 ## Credits
 
-This package is built on top of [vibe-security-skill](https://github.com/raroque/vibe-security-skill) by [Chris Raroque](https://twitter.com/raroque) — an agent skill that defines the security rules as AI-readable references. We translated those rules into runnable static analysis checks and packaged them as a standalone CLI.
+The security rules in this tool are based on [vibe-security-skill](https://github.com/raroque/vibe-security-skill) by [Chris Raroque](https://twitter.com/raroque) — an agent skill that defines security audit rules as AI-readable references. We translated those rules into runnable static analysis checks and packaged them as a standalone CLI.
 
 Extended and maintained by [PagePatcher.com](https://pagepatcher.com).
 
@@ -112,7 +121,7 @@ Extended and maintained by [PagePatcher.com](https://pagepatcher.com).
 
 ## License
 
-MIT License — see [LICENSE](./LICENSE) for full text.
+MIT — see [LICENSE](./LICENSE).
 
 Copyright (c) 2025 Chris Raroque  
 Copyright (c) 2026 PagePatcher.com
