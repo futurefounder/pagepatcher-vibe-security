@@ -9,7 +9,7 @@
     </a>
 </p>
 
-<h1 align="center">pagepatcher-vibe-security — CLI Security Audit for Vibe-Coded Apps</h1>
+<h1 align="center">Pagepatcher - CLI based Vibe Security Audit</h1>
 
 A CLI tool that scans your codebase for common security vulnerabilities that AI coding assistants introduce. Built by [Jesse](https://jessekhala.com) at [PagePatcher.com](https://pagepatcher.com).
 
