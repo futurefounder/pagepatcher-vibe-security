@@ -87,6 +87,17 @@ pagepatcher-vibe-security --path . && echo "Clean"
 
 ---
 
+## Ignore False Positives
+
+If the tool flags something you know is safe (like injecting static HTML), you can suppress the warning by adding `// vibe-security-ignore` either on the same line or the line above it:
+
+```tsx
+// vibe-security-ignore
+<div dangerouslySetInnerHTML={{ __html: post.content }} />
+```
+
+---
+
 ## Tech Stack Detection
 
 Scans `package.json` to auto-detect which checks to run — no config needed:

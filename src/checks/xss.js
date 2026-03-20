@@ -10,10 +10,15 @@ export function check(files) {
       const trimmed = line.trim();
       if (trimmed.startsWith('//') || trimmed.startsWith('*')) return;
 
+      // Allow users to suppress false positives
+      const prevLine = i > 0 ? lines[i - 1] : '';
+      if (line.includes('vibe-security-ignore') || prevLine.includes('vibe-security-ignore')) return;
+
       // ── dangerouslySetInnerHTML with dynamic value ─────────
       if (/dangerouslySetInnerHTML\s*=\s*\{\{?\s*__html\s*:/.test(line)) {
         // Flag if it's not a plain string literal (has a variable or expression)
-        if (!/:\s*['"`][^$\n]*['"`]\s*\}/.test(line)) {
+        // Skip JSON.stringify which is the standard safe way to inject structured data (JSON-LD)
+        if (!/:\s*['"`][^$\n]*['"`]\s*\}/.test(line) && !/JSON\.stringify\s*\(/.test(line)) {
           findings.push({
             severity: 'high',
             title: 'dangerouslySetInnerHTML with dynamic value — XSS risk',
