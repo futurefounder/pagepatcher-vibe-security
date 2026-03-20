@@ -53,14 +53,13 @@ export function check(files, rootDir, stacks) {
 
         // INSERT/UPDATE without WITH CHECK — SQL/migration files only
         if (SQL_FILE.test(path) && /FOR\s+(INSERT|UPDATE)/i.test(line)) {
-          const block = lines.slice(i, i + 6).join(' ');
-          // Skip if service role context
-          if (/TO\s+service_role/i.test(block)) return;
-          if (!/WITH\s+CHECK/i.test(block)) {
-            // Check if the nearby USING clause is (true) — service role patterns are fine
-            const withUsing = lines.slice(i, i + 8).join('\n');
-            if (/TO\s+service_role/i.test(withUsing)) return;
+          // Look backward and forward to capture the whole CREATE POLICY statement
+          const block = lines.slice(Math.max(0, i - 8), i + 8).join('\n');
+          
+          // Skip if it is a service role policy or intentionally public
+          if (/TO\s+service_role/i.test(block) || SAFE_POLICY_NAMES.test(block)) return;
 
+          if (!/WITH\s+CHECK/i.test(block)) {
             findings.push({
               severity: 'high',
               title: 'Supabase RLS INSERT/UPDATE policy missing WITH CHECK',

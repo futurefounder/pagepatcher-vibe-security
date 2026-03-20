@@ -1,6 +1,6 @@
 {
   "name": "pagepatcher-vibe-security",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Security audit CLI for vibe-coded apps — by PagePatcher.com",
   "type": "module",
   "homepage": "https://pagepatcher.com",
