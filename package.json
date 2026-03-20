@@ -1,0 +1,27 @@
+{
+  "name": "pagepatcher-vibe-security",
+  "version": "1.0.0",
+  "description": "Security audit CLI for vibe-coded apps — by PagePatcher.com",
+  "type": "module",
+  "homepage": "https://pagepatcher.com",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/raroque/vibe-security-skill"
+  },
+  "author": {
+    "name": "PagePatcher.com",
+    "url": "https://pagepatcher.com"
+  },
+  "bin": {
+    "pagepatcher-vibe-security": "./bin/vibe-security.js"
+  },
+  "main": "./src/index.js",
+  "keywords": ["security", "audit", "vibe-coding", "cli", "static-analysis", "pagepatcher", "nextjs", "supabase"],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "chalk": "^5.3.0"
+  }
+}
